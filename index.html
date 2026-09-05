@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Canopy — Personal Budget</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<!-- Installable app support -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B1E14" id="themeColorMeta">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Canopy">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body class="theme-dark">
+
+  <!-- Decorative canopy background, purely CSS-drawn -->
+  <div class="canopy-bg" aria-hidden="true">
+    <svg class="canopy-svg canopy-svg--top" viewBox="0 0 1200 260" preserveAspectRatio="none">
+      <path d="M0,40 C120,110 180,10 300,70 C400,120 460,20 560,60 C660,100 720,10 820,55 C920,100 1000,20 1090,60 C1150,85 1180,50 1200,60 L1200,0 L0,0 Z" fill="var(--leaf-1)"/>
+      <path d="M0,10 C100,70 220,-10 340,40 C450,85 520,0 640,35 C740,65 830,-5 950,30 C1040,55 1120,10 1200,25 L1200,0 L0,0 Z" fill="var(--leaf-2)"/>
+    </svg>
+    <svg class="canopy-svg canopy-svg--bottom" viewBox="0 0 1200 220" preserveAspectRatio="none">
+      <path d="M0,220 C90,150 170,210 260,160 C360,105 430,190 540,150 C650,110 720,200 830,155 C930,115 1010,195 1120,150 C1160,135 1180,150 1200,140 L1200,220 Z" fill="var(--leaf-1)"/>
+    </svg>
+    <div class="light-shaft light-shaft--1"></div>
+    <div class="light-shaft light-shaft--2"></div>
+  </div>
+
+  <div class="app-shell">
+
+    <!-- Desktop / tablet sidebar -->
+    <nav class="side-nav" aria-label="Primary">
+      <div class="brand">
+        <span class="brand-mark">🌿</span>
+        <span class="brand-name">Canopy</span>
+      </div>
+      <button class="nav-item is-active" data-screen="dashboard">
+        <span class="nav-icon">🏡</span><span>Dashboard</span>
+      </button>
+      <button class="nav-item" data-screen="history">
+        <span class="nav-icon">📜</span><span>History</span>
+      </button>
+      <button class="nav-item" data-screen="savings">
+        <span class="nav-icon">🏦</span><span>Savings</span>
+      </button>
+      <button class="nav-item" data-screen="settings">
+        <span class="nav-icon">⚙️</span><span>Settings</span>
+      </button>
+      <button class="side-add-btn" id="sideAddBtn">
+        <span>+</span> Add transaction
+      </button>
+    </nav>
+
+    <main class="main-view">
+
+      <!-- ============ DASHBOARD ============ -->
+      <section class="screen is-active" id="screen-dashboard" aria-labelledby="dashTitle">
+
+        <header class="screen-header month-switcher">
+          <button class="month-arrow" id="prevMonth" aria-label="Previous month">‹</button>
+          <h1 id="dashTitle" class="month-title">September</h1>
+          <button class="month-arrow" id="nextMonth" aria-label="Next month">›</button>
+        </header>
+
+        <div class="status-banner" id="statusBanner">
+          <span class="status-dot" id="statusDot"></span>
+          <p id="statusMessage">Add a transaction to see how your month is shaping up.</p>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card stat-card--income">
+            <div class="stat-icon">💵</div>
+            <div class="stat-label">Income</div>
+            <div class="stat-value" id="statIncome">$0.00</div>
+          </div>
+          <div class="stat-card stat-card--spent">
+            <div class="stat-icon">💸</div>
+            <div class="stat-label">Spent</div>
+            <div class="stat-value" id="statSpent">$0.00</div>
+          </div>
+          <div class="stat-card stat-card--savings">
+            <div class="stat-icon">🏦</div>
+            <div class="stat-label">Projected Savings</div>
+            <div class="stat-value" id="statSavings">$0.00</div>
+          </div>
+          <div class="stat-card stat-card--safe">
+            <div class="stat-icon">💳</div>
+            <div class="stat-label">Safe to Spend</div>
+            <div class="stat-value" id="statSafe">$0.00</div>
+          </div>
+        </div>
+
+        <div class="rate-pill">
+          Savings rate: <strong id="rateDisplay">25%</strong>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Income vs. spending</h2>
+            <span class="panel-sub">Last 6 months</span>
+          </div>
+          <div id="trendChart" class="chart-holder"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Recent activity</h2>
+            <button class="link-btn" data-screen-link="history">See all</button>
+          </div>
+          <ul class="tx-list tx-list--compact" id="recentTxList"></ul>
+        </div>
+
+      </section>
+
+      <!-- ============ HISTORY ============ -->
+      <section class="screen" id="screen-history" aria-labelledby="historyTitle">
+        <header class="screen-header">
+          <h1 id="historyTitle">Transaction history</h1>
+          <p class="screen-sub" id="historySubMonth">September</p>
+        </header>
+
+        <div class="filter-row" id="filterRow">
+          <button class="filter-chip is-active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="income">Income</button>
+          <button class="filter-chip" data-filter="spending">Spending</button>
+        </div>
+
+        <ul class="tx-list" id="historyTxList"></ul>
+        <div class="empty-state" id="historyEmpty" hidden>
+          <div class="empty-icon">🌾</div>
+          <p>No transactions yet this month.</p>
+          <p class="empty-sub">Tap the + button to log your first one.</p>
+        </div>
+      </section>
+
+      <!-- ============ SAVINGS ============ -->
+      <section class="screen" id="screen-savings" aria-labelledby="savingsTitle">
+        <header class="screen-header">
+          <h1 id="savingsTitle">Savings</h1>
+        </header>
+
+        <div class="hero-savings">
+          <div class="hero-savings-label">Total savings</div>
+          <div class="hero-savings-value" id="totalSavingsValue">$0.00</div>
+          <div class="hero-savings-sub" id="thisMonthSavingsSub">+$0.00 projected this month</div>
+        </div>
+
+        <div class="panel" id="goalPanel">
+          <div class="panel-header">
+            <h2>Savings goal</h2>
+            <button class="link-btn" data-screen-link="settings">Edit</button>
+          </div>
+          <div class="goal-figures">
+            <span id="goalCurrent">$0.00</span>
+            <span class="goal-sep">/</span>
+            <span id="goalTarget">$500.00</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="goalProgressFill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Growth over time</h2>
+            <span class="panel-sub">Cumulative savings</span>
+          </div>
+          <div id="growthChart" class="chart-holder"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Monthly breakdown</h2>
+          </div>
+          <ul class="savings-history" id="savingsHistoryList"></ul>
+        </div>
+      </section>
+
+      <!-- ============ SETTINGS ============ -->
+      <section class="screen" id="screen-settings" aria-labelledby="settingsTitle">
+        <header class="screen-header">
+          <h1 id="settingsTitle">Settings</h1>
+        </header>
+
+        <div class="panel">
+          <label class="field-label" for="savingsPercentInput">Savings percentage</label>
+          <p class="field-hint">Portion of what's left after spending that gets set aside each month.</p>
+          <div class="slider-row">
+            <input type="range" id="savingsPercentInput" min="0" max="100" step="1" value="25">
+            <span class="slider-value" id="savingsPercentValue">25%</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <label class="field-label" for="currencyInput">Currency</label>
+          <select id="currencyInput" class="select-input">
+            <option value="USD">USD — US Dollar ($)</option>
+            <option value="EUR">EUR — Euro (€)</option>
+            <option value="GBP">GBP — British Pound (£)</option>
+            <option value="CAD">CAD — Canadian Dollar ($)</option>
+            <option value="JPY">JPY — Japanese Yen (¥)</option>
+          </select>
+        </div>
+
+        <div class="panel">
+          <label class="field-label" for="goalInput">Savings goal</label>
+          <p class="field-hint">Set a target so your progress bar has something to reach for.</p>
+          <div class="input-with-prefix">
+            <span id="goalPrefix">$</span>
+            <input type="number" id="goalInput" min="0" step="1" placeholder="500">
+          </div>
+        </div>
+
+        <div class="panel">
+          <label class="field-label">Appearance</label>
+          <div class="toggle-row">
+            <button class="toggle-option is-active" data-theme="dark">🌙 Dark canopy</button>
+            <button class="toggle-option" data-theme="light">☀️ Sunlit</button>
+          </div>
+        </div>
+
+        <div class="panel panel--danger">
+          <label class="field-label">Reset app</label>
+          <p class="field-hint">Permanently erase every transaction, goal, and setting.</p>
+          <button class="danger-btn" id="clearDataBtn">Clear all data</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Bottom nav for mobile -->
+  <nav class="bottom-nav" aria-label="Primary">
+    <button class="bn-item is-active" data-screen="dashboard">
+      <span class="nav-icon">🏡</span><span>Home</span>
+    </button>
+    <button class="bn-item" data-screen="history">
+      <span class="nav-icon">📜</span><span>History</span>
+    </button>
+    <button class="bn-fab" id="mobileAddBtn" aria-label="Add transaction">+</button>
+    <button class="bn-item" data-screen="savings">
+      <span class="nav-icon">🏦</span><span>Savings</span>
+    </button>
+    <button class="bn-item" data-screen="settings">
+      <span class="nav-icon">⚙️</span><span>Settings</span>
+    </button>
+  </nav>
+
+  <!-- Add transaction modal -->
+  <div class="modal-overlay" id="modalOverlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <h2 id="modalTitle">Add transaction</h2>
+        <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      </div>
+
+      <form id="txForm">
+        <div class="type-toggle">
+          <button type="button" class="type-option is-active" data-type="spending">Spending</button>
+          <button type="button" class="type-option" data-type="income">Income</button>
+        </div>
+
+        <label class="field-label" for="txAmount">Amount</label>
+        <div class="input-with-prefix input-with-prefix--big">
+          <span id="txCurrencyPrefix">$</span>
+          <input type="number" id="txAmount" min="0" step="0.01" placeholder="0.00" required inputmode="decimal">
+        </div>
+
+        <label class="field-label" for="txDescription">Description</label>
+        <input type="text" id="txDescription" class="text-input" placeholder="e.g. Farmers market" maxlength="60" required>
+
+        <label class="field-label" for="txCategory">Category</label>
+        <select id="txCategory" class="select-input"></select>
+
+        <label class="field-label" for="txDate">Date</label>
+        <input type="date" id="txDate" class="text-input" required>
+
+        <button type="submit" class="primary-btn">Add transaction</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm clear-data dialog -->
+  <div class="modal-overlay" id="confirmOverlay" hidden>
+    <div class="modal modal--small" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div class="modal-header">
+        <h2 id="confirmTitle">Clear all data?</h2>
+      </div>
+      <p class="confirm-text">This deletes every transaction, your savings history, and resets your settings. This can't be undone.</p>
+      <div class="confirm-actions">
+        <button class="ghost-btn" id="cancelClear">Cancel</button>
+        <button class="danger-btn" id="confirmClear">Yes, erase everything</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

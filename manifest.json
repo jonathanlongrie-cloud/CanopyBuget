@@ -1,0 +1,16 @@
+{
+  "name": "Canopy — Personal Budget",
+  "short_name": "Canopy",
+  "description": "A jungle-themed personal budgeting app that helps you spend less than you make and grow your savings.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B1E14",
+  "theme_color": "#0B1E14",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
