@@ -14,7 +14,7 @@
   --shadow-soft: 0 12px 32px -16px rgba(0,0,0,0.55);
   --transition-fast: 160ms ease;
   --transition-med: 260ms cubic-bezier(.4,0,.2,1);
-}
+} 
 
 /* ---------- Dark canopy (default) ---------- */
 body.theme-dark{
@@ -133,7 +133,7 @@ button{ cursor: pointer; }
 .main-view{
   flex: 1;
   min-width: 0;
-  padding: 24px 20px 110px;
+  padding: calc(24px + env(safe-area-inset-top)) 20px 110px;
   max-width: 720px;
   margin: 0 auto;
   width: 100%;
@@ -728,7 +728,7 @@ input[type="range"]::-moz-range-thumb{
   .side-add-btn span{ font-size: 1.2rem; }
   .side-add-btn:hover{ transform: translateY(-1px); }
 
-  .main-view{ padding: 40px 48px 60px; max-width: 780px; }
+  .main-view{ padding: calc(40px + env(safe-area-inset-top)) 48px 60px; max-width: 780px; }
 
   .stat-grid{ grid-template-columns: repeat(4, 1fr); }
   .month-title{ font-size: 2.1rem; }
