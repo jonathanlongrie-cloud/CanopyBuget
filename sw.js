@@ -1,7 +1,7 @@
 /* Canopy — service worker
    Caches the app shell so it opens instantly and works offline once installed. */
 
-const CACHE_NAME = "canopy-cache-v1";
+const CACHE_NAME = "canopy-cache-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
